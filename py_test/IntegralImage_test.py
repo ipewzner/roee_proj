@@ -43,7 +43,7 @@ def test_IntegralImage_4():
      
 
     data_array, size = csv2A.load_csv_to_array('C:/Users/ipewz/Desktop/roee_proj/forTest/img.csv')
-    bm, size = csv2A.load_csv_to_array('C:/Users/ipewz/Desktop/roee_proj/forTest//bm.csv')
+    bm, size = csv2A.load_csv_to_array('C:/Users/ipewz/Desktop/roee_proj/forTest/IntI.csv')
 
     result = im.IntegralImage(data_array)
     expected = np.array(bm)
@@ -61,6 +61,7 @@ if __name__ == "__main__":
     print("2 passed")
     test_IntegralImage_3()
     print("3 passed")
+    test_IntegralImage_4()
     print("4 passed")
     
     print("Everything passed")

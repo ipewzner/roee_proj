@@ -25,8 +25,9 @@ def IntegralImage(A):
             I[n, m] = I1 + z[n, m]
 
     return I
-
+'''
 # Example usage:
 A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 I = IntegralImage(A)
 print(I)
+'''

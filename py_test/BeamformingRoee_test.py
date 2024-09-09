@@ -19,6 +19,18 @@ def test_BeamformingRoee():
     img, _ = csv2A.load_csv_to_2d_array('C:/Users/ipewz/Desktop/roee_proj/forTest/img.csv')
 
     # Inspect the shape and size of img
+    print(f"Loaded PingData shape: {PingData.shape}")
+    print(f"Loaded PingData size: {PingData.size}")
+    # Inspect the shape and size of img
+    print(f"Loaded matched_filter shape: {matched_filter.shape}")
+    print(f"Loaded matched_filter size: {matched_filter.size}")
+    # Inspect the shape and size of img
+    print(f"Loaded azBeams shape: {azBeams.shape}")
+    print(f"Loaded azBeams size: {azBeams.size}")
+    # Inspect the shape and size of img
+    print(f"Loaded pos_sensors shape: {pos_sensors.shape}")
+    print(f"Loaded pos_sensors size: {pos_sensors.size}")
+    # Inspect the shape and size of img
     print(f"Loaded img shape: {img.shape}")
     print(f"Loaded img size: {img.size}")
 

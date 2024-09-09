@@ -10,8 +10,11 @@ def DetectionBlobsRoee(BinaryMap, min_pixel, max_pixel):
     else:
         raise ValueError("BinaryMap must be either 1D or 2D.")
 
+    print("structure",structure)
     # Label connected components in the binary image
     labeled_array, NumofObj = label(BinaryMap, structure=structure)
+    print("labeled_array",labeled_array)
+    print("NumofObj",NumofObj)
 
     imageRowCnt = BinaryMap.shape[0]
 
