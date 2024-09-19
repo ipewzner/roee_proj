@@ -1,21 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "Shortproc_ping_dataRoee.h"
+
+
 
 // Function prototypes (you need to implement these)
 void SetParameters();
 double* GetDataFromRam(int pri_samples, int PingNum, int Tgaurd_fs);
 double GetYawFromCompass(int PingNum);
-void Shortproc_ping_dataRoee(double* PingData, double* matched_filter, double Rmin, int fs, double* azBeams, double* pos_sensors,
-                             int pri_samples, double* ImgTh, int FinalPingFlag, int UpdateThFlag, double* IndVec, double* rVec, double* NewImgTh, 
-                             int num_azBeams, int num_sensors, int data_length);
-void ShortImgProc_v2Roee(double* IndVec, double* rVec, double sigmaTeta, double* azBeams, double CurrentYaw,
-                         double* MergedRng, double* MergedTeta, double* MergedYc);
-void AnalyzeTracks(double* TracksMat, double* TracksVecMat, double* TracksP, double* TracksX, double* TracksMissMat,
-                   int* TracksDataBinMat, double* TracksDataMat, double MergedRng, double MergedTeta, double MergedYc,
-                   int PingNum, double t_pri, double sigmaTeta, int Win_dlt, int Dlt_th, int MaxTarget, int* CurrentTargetInd);
-void CheckDetect(double* TracksMissMat4, double* TracksMissMat5, double* TracksMat, double* TracksMat3, 
-                 int MinTracketLen, double* ReportTrackRange, int* DetectFlagVec);
+
 
 // Global Variables
 int no_of_pings; // Number of pings, will be set in SetParameters
