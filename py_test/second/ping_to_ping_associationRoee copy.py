@@ -1,3 +1,12 @@
+
+#
+#
+
+#   ind missing the gpt is lazey fix it!
+
+#
+#
+
 import numpy as np
 import cov_plot_calcRoee as cpc
 import AuctionRoee as ar
@@ -27,32 +36,16 @@ def ping_to_ping_associationRoee(TracksMat, TracksVecMat, TracksP, TracksX, Trac
     Ntr = len(undeleted_tracks_ind)
     A[A == 0] = LARGE
 
-    assigned = ar.AuctionRoee(A)    #to_do: fixing this err that cuse by matlab run from 1 
-    
-    Assigned = []
- 
-    def list_of_non_neg_1(array):
-        result = []
-        for i, element in enumerate(array):
-            if element != -1:
-                result.append(i)
-        return result
-    
-    def decrement_non_zero(array):
-        return [(element - 1)  for element in array]
-        #return [(element - 1) if element != 0 else element for element in array]
-    
-    Assigned=decrement_non_zero(assigned)
+    Assigned = ar.AuctionRoee(A)
 
     if Ntr > NumDetect_new:
         # Handling assigned tracks
-        ind1 = np.where(Assigned != -1)[0]
-        
-        for nn in range(len(ind1)):
-            plot_id = plots_index_new[Assigned[ind1[nn]]]
-            track_id = undeleted_tracks_ind[ind1[nn]]
+        ind1 = np.where(Assigned != 0)[0]
+        for nn in ind1:
+            plot_id = plots_index_new[Assigned[nn]]
+            track_id = undeleted_tracks_ind[nn]
            
-            if A[ind1[nn], Assigned[ind1[nn]]] == LARGE:
+            if A[nn, Assigned[nn]] == LARGE:
                 # Unassigned track
                 TracksVecMat[3, track_id] = ping_ind
                 TracksMissMat[0, track_id, ping_ind] = TracksMissMat[0, track_id, ping_ind - 1] + 1
@@ -88,14 +81,11 @@ def ping_to_ping_associationRoee(TracksMat, TracksVecMat, TracksP, TracksX, Trac
                 TracksMissMat[i, track_id, ping_ind] = TracksMissMat[i, track_id, ping_ind - 1] + (i == 0)
 
     else:
-        #ind1 = np.nonzero(Assigned )
-        ind1 = list_of_non_neg_1(Assigned)
-
-        #ind1 = np.where(Assigned != 0)[0]
-        for nn in range(len(ind1)):
-            plot_id = plots_index_new[ind1[nn]]
-            track_id = undeleted_tracks_ind[Assigned[ind1[nn]]]
-            if A[Assigned[ind1[nn]], ind1[nn]] == LARGE:
+        ind1 = np.where(Assigned != 0)[0]
+        for nn in ind1:
+            plot_id = plots_index_new[nn]
+            track_id = undeleted_tracks_ind[Assigned[nn]]
+            if A[Assigned[nn], nn] == LARGE:
                 TracksVecMat[3, track_id] = ping_ind
                 for i in range(5):
                     TracksMissMat[i, track_id, ping_ind] = TracksMissMat[i, track_id, ping_ind - 1] + (i == 0)
@@ -116,12 +106,8 @@ def ping_to_ping_associationRoee(TracksMat, TracksVecMat, TracksP, TracksX, Trac
                 TracksVecMat[3, track_id] = ping_ind
                 TracksVecMat[0, track_id] += 1
 
-                TracksMissMat[0, track_id, ping_ind] = 0  # MATLAB index 1 -> Python index 0
-                TracksMissMat[1, track_id, ping_ind] = X_upd[2]  # MATLAB index 3 -> Python index 2
-                TracksMissMat[2, track_id, ping_ind] = X_upd[3]  # MATLAB index 4 -> Python index 3
-                TracksMissMat[3, track_id, ping_ind] = X_upd[0]  # MATLAB index 1 -> Python index 0
-                TracksMissMat[4, track_id, ping_ind] = X_upd[1]  # MATLAB index 2 -> Python index 1
-
+                TracksMissMat[0, track_id, ping_ind] = 0
+                TracksMissMat[1:5, track_id, ping_ind] = X_upd[2:4]
 
         # Handling unassigned plots
         uncorr_plots_list = plots_index_new[np.where(Assigned == 0)[0]]
