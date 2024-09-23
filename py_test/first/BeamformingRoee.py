@@ -37,10 +37,10 @@ def BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, fs, pri_samp
                 data_beam += np.concatenate((PingData[k, shift:], np.zeros(shift)))
             elif shift < 0:
                 print(PingData[k, :shift])
-                #data_beam += np.concatenate((np.zeros(abs(shift)), PingData[k, :shift]))
+                data_beam += np.concatenate((np.zeros(abs(shift)), PingData[k, :shift]))
             else:
                 print(PingData[k, :])
-                #data_beam += PingData[k, :]
+                data_beam += PingData[k, :]
 
 
         MF = np.abs(signal.convolve(matched_filter, data_beam, mode='full'))

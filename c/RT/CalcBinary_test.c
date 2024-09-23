@@ -133,5 +133,5 @@ int main() {
     return 0;
 }
 
-// gcc CalcBinary.c -o CalcBinary.exe -lm
-//./CalcBinary.exe
+// gcc CalcBinary_test.c -o CalcBinary_test.exe -lm
+//./CalcBinary_test.exe

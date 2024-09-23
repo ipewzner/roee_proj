@@ -82,7 +82,7 @@ int main() {
 
 /*
 
-// gcc Kalman_filterRoee_test.c -o Kalman_filterRoee_test.exe -lm
-//./Kalman_filterRoee_test.exe
+ gcc Kalman_filterRoee_test.c -o Kalman_filterRoee_test.exe -lm
+./Kalman_filterRoee_test.exe
 
 */

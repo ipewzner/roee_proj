@@ -111,7 +111,7 @@ def test_std_calcRoee():
     k = 1
     last_ping_number = 1
     n = 2
-    std_dis_corr = 1.08E-05
+    #std_dis_corr = 1.08E-05
 
     # Load inputs from CSV files
     MergedYc, _ = load_csv_to_2d_array('C:/Users/ipewz/Desktop/roee_proj/forTest/std_calcRoee/MergedYc.csv')

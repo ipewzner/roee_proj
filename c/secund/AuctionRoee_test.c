@@ -49,7 +49,7 @@ int main() {
 
 /*
 
-// gcc AuctionRoee_test.c -o AuctionRoee_test.exe -lm
-//./AuctionRoee_test.exe
+ gcc AuctionRoee_test.c -o AuctionRoee_test.exe -lm
+./AuctionRoee_test.exe
 
 */

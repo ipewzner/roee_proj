@@ -40,6 +40,7 @@ int* find_indices(int *array, int length, int zz) {
 
 // Main auction algorithm function in C
 void AuctionRoee(double *assign_mtrx, int N, int M, int *Assigned) {
+    
     // A = -assign_mtrx
     double *A = (double *)malloc(N * M * sizeof(double));
     for (int i = 0; i < N * M; i++) {
