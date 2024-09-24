@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "cmath": "cpp",
+        "cov_plot_calcroee.h": "c"
+    }
+}

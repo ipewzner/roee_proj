@@ -20,3 +20,5 @@ cl=detectblolbroee
 intI=intgrelimage(img2)
 
 '''
+10:00->15:30
+10:10->17:55
