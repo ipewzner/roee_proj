@@ -61,6 +61,7 @@ def main():
     # Loop to continuously check for the latest result file and visualize
     while True:
         latest_result_file = get_latest_result_file(result_dir)
+        #latest_result_file = "c:/Users/ipewz/Desktop/roee_proj/c/RT/result_005.csv"
         if latest_result_file:
             print(f"Latest result file: {latest_result_file}")
             visualize_result_with_img(latest_result_file, img_file)

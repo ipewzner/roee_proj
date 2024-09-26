@@ -30,7 +30,7 @@ int main2() {
 }
 */
 
-void DetectionBlobsRoee(int *BinaryMap, int rows, int cols, int min_pixel, int max_pixel, int *ReportCL, int *NumObjects) {
+void DetectionBlobsRoee(int *BinaryMap, int rows, int cols, int min_pixel, int max_pixel, int **ReportCL, int *NumObjects) {
     // Call bwconncomp to get the connected components
     ConnectedComponents *CC = bwconncomp(BinaryMap, rows, cols);
     int NumofObj = CC->numObjects;
@@ -86,11 +86,11 @@ void DetectionBlobsRoee(int *BinaryMap, int rows, int cols, int min_pixel, int m
     }
 
     // Allocate memory for ReportCL
-    //*ReportCL = (int *)malloc((*NumObjects) * sizeof(int));
+    *ReportCL = (int *)malloc((*NumObjects) * sizeof(int));
     int posIndex = 0;
     for (int i = 0; i < NumofObj; i++) {
         if (CL[i] != 999.0) {
-            ReportCL[posIndex++] = CL[i]+1;      //to-do: the +1 is artficely insert to make the test pass // i think it to fix the matleb start on 1
+            (*ReportCL)[posIndex++] = CL[i]+1;      //to-do: the +1 is artficely insert to make the test pass // i think it to fix the matleb start on 1
         }
     }
 

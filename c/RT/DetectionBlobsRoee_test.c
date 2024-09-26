@@ -124,13 +124,14 @@ void test_DetectionBlobsRoee() {
 
     // Allocate memory for result
     int* result = (int*)malloc(MAX_LABELS * sizeof(int));
-printf("Expected:\n");
+    printf("Expected:\n");
+    
     for (int i = 0; i < size; i++) {
         printf("%d ", expected[i]);  // Correct format specifier for int
     }
     // Call DetectionBlobsRoee
     int numResult;
-    DetectionBlobsRoee(binaryMap, rows, cols, 1, 10000, &result, &numResult);
+    DetectionBlobsRoee(binaryMap, rows, cols, 1, 10000, result, &numResult);
 
     printf("Expected:\n");
     for (int i = 0; i < numResult; i++) {
@@ -171,5 +172,9 @@ int main() {
     return 0;
 }
 
-// gcc DetectionBlobsRoee_test.c -o DetectionBlobsRoee_test.exe -lm
-//./DetectionBlobsRoee_test.exe
+/*
+
+ gcc DetectionBlobsRoee_test.c -o DetectionBlobsRoee_test.exe -lm
+./DetectionBlobsRoee_test.exe
+
+*/

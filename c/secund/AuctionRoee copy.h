@@ -88,7 +88,7 @@ void AuctionRoee(double *assign_mtrx, int N, int M, int *Assigned) {
                     Assigned_indx[(int)Assigned[i1] - 1] = 0; // Unassign previous
                 }
 
-                Assigned[i1] = m ;//+ 1; // Assign plot m to track i1
+                Assigned[i1] = m + 1; // Assign plot m to track i1
                 Assigned_indx[m] = 1; // Mark as assigned
 
                 assignment_val[i1] = 100 * assignment_val[i1]; // Find next best bid
@@ -123,7 +123,7 @@ void AuctionRoee(double *assign_mtrx, int N, int M, int *Assigned) {
                     Assigned_indx[(int)Assigned[i1] - 1] = 0; // Unassign previous
                 }
 
-                Assigned[i1] = n;// + 1; // Assign track n to plot i1
+                Assigned[i1] = n + 1; // Assign track n to plot i1
                 Assigned_indx[n] = 1; // Mark as assigned
 
                 assignment_val[i1] = 100 * assignment_val[i1]; // Find next best bid

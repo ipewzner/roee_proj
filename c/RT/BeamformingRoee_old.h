@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define N 3201  // Adjust according to image dimensions
-#define M 72    // Adjust according to image dimensions
+#define N 3201  // Adjust these according to your image dimensions
+#define M 72    // Adjust these according to your image dimensions
 
 // Function to perform convolution
 void convolve(const double* signal, int signal_len, const double* filter, int filter_len, double* result) {
-    for (int n = 0; n < signal_len + filter_len - 1; n++) {
+    for (int n = 0; n < signal_len + filter_len ; n++) {
         result[n] = 0;
         for (int k = 0; k < filter_len; k++) {
             if (n - k >= 0 && n - k < signal_len) {
@@ -18,7 +18,6 @@ void convolve(const double* signal, int signal_len, const double* filter, int fi
     }
 }
 
-// Beamforming function
 void BeamformingRoee(double* PingData, double* matched_filter, double* azBeams, double* pos_sensors,
                      int fs, int pri_samples, double* Beam, int num_azBeams, int num_sensors, int data_length) {
     double snd_vel = 1500;  // [m/sec]
@@ -26,8 +25,11 @@ void BeamformingRoee(double* PingData, double* matched_filter, double* azBeams, 
     double u, w, tau;
     int shift;
 
+ 
     // Initialize Beam matrix to zeros
-    memset(Beam, 0, pri_samples * num_azBeams * sizeof(double));
+    for (int i = 0; i < pri_samples * num_azBeams - 1; i++) {
+        *(Beam + i) = 0.0;
+    }
 
     // Beamforming (Delay and Sum)
     for (int m = 0; m < num_azBeams; m++) {
@@ -36,15 +38,22 @@ void BeamformingRoee(double* PingData, double* matched_filter, double* azBeams, 
 
         double* data_beam = (double*)calloc(data_length, sizeof(double));
 
+        for (int j = 0; j < data_length; j++) {
+            data_beam[j] = 0.0;
+        }
+
+    
+
         for (int k = 0; k < num_sensors; k++) {
-            tau = 1.0 / snd_vel * (pos_sensors[k * 3] * u + pos_sensors[k * 3 + 1] * w + pos_sensors[k * 3 + 2] * v);
+            tau = 1.0 / snd_vel * (pos_sensors[k + num_sensors * 0] * u + pos_sensors[k + num_sensors * 1] * w + pos_sensors[k + num_sensors * 2] * v);
+
             shift = round(tau * fs);
 
             if (shift > 0) {
                 for (int j = 0; j < data_length - shift; j++) {
                     data_beam[j] += PingData[k * data_length + j + shift];
                 }
-            } else if (shift < 0) {
+            }else if (shift < 0) {
                 for (int j = 0; j < data_length + shift; j++) {
                     data_beam[j - shift] += PingData[k * data_length + j];
                 }
@@ -56,13 +65,19 @@ void BeamformingRoee(double* PingData, double* matched_filter, double* azBeams, 
         }
 
         // Convolution with matched filter
-        int filter_length = 1281;  // Assuming filter length
-        double* MF = (double*)calloc(data_length + filter_length - 1, sizeof(double));
+        int filter_length = 1281;  // data_length + filter_length - 1
+
+        double* MF = (double*)calloc(data_length + filter_length, sizeof(double));
+        /*
+         pad = 2 ^ nextpow2(RefL + DataLen  - 1);
+       Corr= ifft(fft(Data,pad).*fft(conj(fliplr(Ref)),pad));
+        */
         convolve(data_beam, data_length, matched_filter, filter_length, MF);
 
-        // Store the magnitude of the convolution result into Beam
+     
+        // Storing the magnitude and taking only pri_samples part
         for (int i = 0; i < pri_samples; i++) {
-            Beam[i * num_azBeams + m] = fabs(MF[i]);
+            Beam[i * M + m] = fabs(MF[i]);
         }
 
         free(data_beam);

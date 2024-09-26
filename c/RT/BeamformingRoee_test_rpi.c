@@ -3,8 +3,9 @@
 #include <math.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/time.h>
 //#include "BeamformingRoee.h" // Your BeamformingRoee function header
-#include "BeamformingRoee_old.h" // Your BeamformingRoee function header
+#include "BeamformingRoee6.h" // Your BeamformingRoee function header
 
 
 #define N 3201  // Number of rows
@@ -141,14 +142,27 @@ void test_BeamformingRoee() {
     double* result = (double*)calloc(N * M, sizeof(double));       // Result from beamforming function
 
     // Load the input data from CSV files
-    ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/img.csv", img,N,M);
-    ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/possens.csv", pos_sensors,4,3);
-    ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/azbeem.csv", azBeams,1,72);
-    ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/11.csv", PingData,4,3201);
-    ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/mf.csv", matched_filter,1,1281);
+    ReadCSV("/home/pi2w/roee_proj/forTest/img.csv", img,N,M);
+    ReadCSV("/home/pi2w/roee_proj/forTest/possens.csv", pos_sensors,4,3);
+    ReadCSV("/home/pi2w/roee_proj/forTest/azbeem.csv", azBeams,1,72);
+    ReadCSV("/home/pi2w/roee_proj/forTest/11.csv", PingData,4,3201);
+    ReadCSV("/home/pi2w/roee_proj/forTest/mf.csv", matched_filter,1,1281);
+
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
 
     // Run the beamforming function
     BeamformingRoee(PingData, matched_filter, azBeams, pos_sensors, 128e3, N, result, M, 4, N);
+
+    gettimeofday(&end, NULL);
+
+    long seconds = end.tv_sec - start.tv_sec;
+    long microseconds = end.tv_usec - start.tv_usec;
+    double elapsed = seconds + microseconds/1000000.0;
+
+    printf("Time elapsed: %f seconds\n", elapsed);
+
 
     // Save the result to a CSV file
     save_to_csv(result, N, M, "result");
@@ -179,17 +193,14 @@ int main() {
     test_BeamformingRoee();
     return 0;
 }
-
+  
 /*
 
-gcc BeamformingRoee_test.c -o BeamformingRoee_test.exe -lm
-./BeamformingRoee_test.exe
+  gcc BeamformingRoee_test.c -o BeamformingRoee_test.exe -lm
+ ./BeamformingRoee_test.exe
 
-
-----------------------------------------------------------------
-
+- - - - - - - - - - - -
 gcc BeamformingRoee_test.c -o BeamformingRoee_test.exe -lfftw3 -lm
 ./BeamformingRoee_test.exe
-
 
 */

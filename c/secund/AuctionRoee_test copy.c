@@ -32,7 +32,7 @@ void test_AuctionRoee() {
         {10000, 10000, 10000, 50.016144755473334, 10000, 10000}};
 
     // Expected assigned array (from the Python example)
-    int expected_assigned[6] = {0, 2, 1, 3, -1, -1};
+    int expected_assigned[6] = {1, 3, 2, 4, 0, 0};
 
     // Output array for the result of the AuctionRoee function
     // int Assigned[6] = {0};  // Initialize as unassigned

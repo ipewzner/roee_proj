@@ -88,7 +88,7 @@ int CompareBinaryMaps(const int* map1, const int* map2) {
 
 // Test function
 void TestCalcBinary() {
-    //printf("0.1.\n");
+    // printf("0.1.\n");
 
     double* img = (double*)malloc(N * M * sizeof(double));
     int* expectedBinaryMap = (int*)malloc(N * M * sizeof(int));
@@ -100,17 +100,27 @@ void TestCalcBinary() {
         exit(EXIT_FAILURE);
     }
 
-    //printf("1.\n");
+    // printf("1.\n");
 
     // Read the image and expected binary map from the CSV files
     ReadCSV("C:/Users/ipewz/Desktop/roee_proj/forTest/img.csv", img);
-    //printf("3.\n");
+    // printf("3.\n");
     ReadCSVInt("C:/Users/ipewz/Desktop/roee_proj/forTest/bm.csv", expectedBinaryMap);
-    //printf("4.\n");
+    // printf("4.\n");
 
     // Calculate the binary map
     CalcBinary(img, computedBinaryMap);
-    //printf("5.\n");
+    // printf("5.\n");
+
+    /*
+        printf("\n*** ");
+        for (size_t i = 0; i < N * M; i++) {
+            if (computedBinaryMap[i] != 0) {
+                printf("%d ", i);
+            }
+        }
+        printf(" ***\n ");
+    */
 
     // Compare the computed binary map with the expected binary map
     if (CompareBinaryMaps(computedBinaryMap, expectedBinaryMap)) {
@@ -127,7 +137,7 @@ void TestCalcBinary() {
 
 // Main function
 int main() {
-    //printf("0.\n");
+    // printf("0.\n");
 
     TestCalcBinary();
     return 0;
