@@ -14,6 +14,7 @@ int arrays_equal(int *arr1, int *arr2, int length) {
     }
     return 1;  // Equal
 }
+/*
 int arrays_equal(double *arr1, int *arr2, int length) {
     for (int i = 0; i < length; i++) {
         if (arr1[i] != arr2[i]) {
@@ -22,6 +23,9 @@ int arrays_equal(double *arr1, int *arr2, int length) {
     }
     return 1;  // Equal
 }
+
+*/
+
 // Test function for AuctionRoee
 void test_AuctionRoee() {
     // The input matrix A (from the Python example)
@@ -33,6 +37,7 @@ void test_AuctionRoee() {
 
     // Expected assigned array (from the Python example)
     int expected_assigned[6] = {0, 2, 1, 3, -1, -1};
+    // int expected_assigned[6] = {1, 3, 2, 4, 0, 0};
 
     // Output array for the result of the AuctionRoee function
     // int Assigned[6] = {0};  // Initialize as unassigned
@@ -48,7 +53,7 @@ void test_AuctionRoee() {
     for (size_t i = 0; i < 6; i++) {
         printf("%d ", Assigned[i]);
     }
-    printf("\nexpected_assigned: ");
+    printf("\nexpected: ");
 
     for (size_t i = 0; i < 6; i++) {
         printf("%d ", expected_assigned[i]);
@@ -56,19 +61,9 @@ void test_AuctionRoee() {
 
     // Check if the result matches the expected assigned array
     if (arrays_equal(Assigned, expected_assigned, 6)) {
-        printf("\nTest passed: The result matches the expected values.\n");
+        printf("\nTest passed!\n");
     } else {
         printf("\nTest failed: The result does not match the expected values.\n");
-
-        printf("\expected_assigned: ");
-        for (size_t i = 0; i < 6; i++) {
-            printf("%d ", expected_assigned[i]);
-        }
-
-        printf("\nAssigned: ");
-        for (size_t i = 0; i < 6; i++) {
-            printf("%d ", Assigned[i]);
-        }
     }
 }
 

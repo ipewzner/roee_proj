@@ -27,12 +27,12 @@ double TracksMat[3 * 360];
 #ifdef TEST
 void ping_to_ping_associationRoee(double* TracksMat, double* TracksVecMat, double* TracksP, double* TracksX, double* TracksMissMat,
                                   double* TracksDataBinMat, double* TracksDataMat, double* MergedRng, double* MergedTeta, double* MergedYc,
-                                  int NumDetect, int ping_ind, int sigmaTeta, int cov_fact, int Win_dlt, int xmax, int Tping, int* CurrentTargetInd) {
+                                  int NumDetect, int ping_ind, int sigmaTeta, int cov_fact, int Win_dlt, int xmax, int Tping, int CurrentTargetInd) {
 #else
 void ping_to_ping_associationRoee(
     double *TracksMatT, double *TracksVecMatT, double *TracksPT, double *TracksXT, double *TracksMissMatT,
     double *TracksDataBinMatT, double *TracksDataMatT, double *MergedRngT, double *MergedTetaT, double *MergedYcT,
-    int NumDetect, int ping_ind, int sigmaTeta, int cov_fact, int Win_dlt, int xmax, int Tping, int *CurrentTargetInd) {
+    int NumDetect, int ping_ind, int sigmaTeta, int cov_fact, int Win_dlt, int xmax, int Tping, int CurrentTargetInd) {
     // Copy data from pointers with 'T' to the corresponding arrays
     memcpy(MergedRng, MergedRngT, 13 * sizeof(double));
     memcpy(MergedTeta, MergedTetaT, 13 * sizeof(double));
@@ -48,9 +48,8 @@ void ping_to_ping_associationRoee(
 #endif
 
     int MaxTarget = 360;  // Placeholder, replace with the proper dimension of TracksDataBinMat
-    int undeleted_tracks_count = 0;
-
     // Find undeleted tracks
+    int undeleted_tracks_count = 0;
     for (int i = 0; i < MaxTarget; i++) {
         if (TracksMat[i] == 0) {
             undeleted_tracks_count++;
@@ -59,7 +58,6 @@ void ping_to_ping_associationRoee(
 
     int undeleted_tracks_indA_count = 0;
     int undeleted_tracks_indA[undeleted_tracks_count];
-
     for (int i = 0; i < MaxTarget; i++) {
         if (TracksMat[i] == 0) {
             undeleted_tracks_indA[undeleted_tracks_indA_count++] = i;
@@ -186,18 +184,24 @@ void ping_to_ping_associationRoee(
     // Allocate memory for the undeleted_tracks_ind array
     //  undeleted_tracks_ind = (int *)malloc(num_undeleted * sizeof(int));
     int undeleted_tracks_ind[num_loc];
-    int Ntr = 0;
-    // Extract the indices
+    // int Ntr = 0;
+    //  Extract the indices
     for (int i = 0; i < num_loc; i++) {
-        for (int j = 0; j < undeleted_tracks_count; j++) {
-            if (loc[i] == undeleted_tracks_indA[j]) {
-                undeleted_tracks_ind[Ntr] = j;
-                Ntr++;
-                break;
-            }
-        }
+        undeleted_tracks_ind[i] = undeleted_tracks_indA[loc[i]];
     }
 
+    /*
+       for (int i = 0; i < num_loc; i++) {
+           for (int j = 0; j < undeleted_tracks_count; j++) {
+               if (loc[i] == undeleted_tracks_indA[j]) {
+                   undeleted_tracks_ind[Ntr] = j;
+                   Ntr++;
+                   break;
+               }
+           }
+       }
+   */
+    int Ntr = num_loc;
     // NumDetect_new = length(plots_index_new);
     int NumDetect_new = num_plots_new;
 
@@ -210,18 +214,29 @@ void ping_to_ping_associationRoee(
 
     // Call Auction algorithm
     // int* Assigned = (int*)malloc(Ntr * sizeof(int));
-    int Assigned[Ntr];
-    AuctionRoee(A, Ntr, NumDetect_new, Assigned);
+   int assigned_len=NumDetect_new > num_loc ? NumDetect_new : num_loc;
+    int Assigned[assigned_len];
+    AuctionRoee(A, num_loc, NumDetect_new, Assigned);
 
     // Handle track assignments based on the number of detections and tracks
     if (Ntr > NumDetect_new) {
         // Handling assigned tracks
+
+        // ind1 = find(Assigned ~= 0); %List of assigned tracks
+        int ind1[Ntr];
+        int ind1_count = 0;
         for (int i = 0; i < Ntr; i++) {
             if (Assigned[i] != -1) {
-                int plot_id = plots_index_new[Assigned[i]];
-                int track_id = undeleted_tracks_indA[i];
+                ind1[ind1_count++] = i;
+            }
+        }
 
-                if (Amat[i * NumDetect_new + Assigned[i]] == LARGE) {
+        for (int i = 0; i < Ntr; i++) {
+            if (Assigned[i] != -1) {
+                int plot_id = plots_index_new[Assigned[ind1[i]]];
+                int track_id = undeleted_tracks_indA[ind1[i]];
+
+                if (A[ind1[i] * NumDetect_new + Assigned[ind1[i]]] == LARGE) {
                     TracksVecMat[track_id * 4 + 3] = ping_ind;
                     for (int p = 0; p < 5; p++) {
                         TracksMissMat[track_id * 5 * MaxTarget + p * MaxTarget + ping_ind] =
@@ -255,6 +270,7 @@ void ping_to_ping_associationRoee(
                         }
                     }
 
+                    TracksVecMat[track_id * 4 + 0] += 1;
                     TracksVecMat[track_id * 4 + 1] = sqrt(X_upd[0] * X_upd[0] + X_upd[1] * X_upd[1]);
                     TracksVecMat[track_id * 4 + 2] = teta_rad * 180 / PI;
                     TracksVecMat[track_id * 4 + 3] = ping_ind;
@@ -265,8 +281,176 @@ void ping_to_ping_associationRoee(
                 }
             }
         }
+        // Free memory
+        // Handling unassigned tracks
+        //    ind2 = find(Assigned == 0); %List of unassigned tracks
+        int ind2[Ntr];
+        int ind2_count = 0;
+        for (int i = 0; i < Ntr; i++) {
+            if (Assigned[i] == -1) {
+                ind2[ind2_count++] = i;
+            }
+        }
+
+        // Handle unassigned tracks
+        for (int kk = 0; kk < ind2_count; kk++) {
+            int track_id = undeleted_tracks_ind[ind2[kk]];
+
+            // Update TracksVecMat
+            TracksVecMat[4 * track_id] = ping_ind;
+
+            // Update TracksMissMat
+            TracksMissMat[track_id * 5 + 0 * ping_ind] = TracksMissMat[track_id * 5 + 0 * (ping_ind - 1)] + 1;
+            TracksMissMat[track_id * 5 + 1 * ping_ind] = TracksMissMat[track_id * 5 + 1 * (ping_ind - 1)];
+            TracksMissMat[track_id * 5 + 2 * ping_ind] = TracksMissMat[track_id * 5 + 2 * (ping_ind - 1)];
+            TracksMissMat[track_id * 5 + 3 * ping_ind] = TracksMissMat[track_id * 5 + 3 * (ping_ind - 1)];
+            TracksMissMat[track_id * 5 + 4 * ping_ind] = TracksMissMat[track_id * 5 + 4 * (ping_ind - 1)];
+        }
+
+        // free(ind2);
     }
 
+    else {
+        // ind1 = find(Assigned ~= 0); %List of assigned tracks
+        int ind1[Ntr];
+        int ind1_count = 0;
+        for (int i = 0; i < Ntr; i++) {
+            if (Assigned[i] != -1) {
+                ind1[ind1_count++] = i;
+            }
+        }
+        for (size_t nn = 0; nn < ind1_count; nn++) {
+            int plot_id = plots_index_new[ind1[nn]];
+            int track_id = undeleted_tracks_ind[Assigned[ind1[nn]]];
+
+            if (A[Assigned[ind1[nn]] * NumDetect_new + ind1[nn]] == LARGE) {
+                // Update TracksVecMat
+                TracksVecMat[4 * track_id] = ping_ind;
+
+                // Update TracksMissMat
+                TracksMissMat[track_id * 5 + 0 * ping_ind] = TracksMissMat[track_id * 5 + 0 * (ping_ind - 1)] + 1;
+                TracksMissMat[track_id * 5 + 1 * ping_ind] = TracksMissMat[track_id * 5 + 1 * (ping_ind - 1)];
+                TracksMissMat[track_id * 5 + 2 * ping_ind] = TracksMissMat[track_id * 5 + 2 * (ping_ind - 1)];
+                TracksMissMat[track_id * 5 + 3 * ping_ind] = TracksMissMat[track_id * 5 + 3 * (ping_ind - 1)];
+                TracksMissMat[track_id * 5 + 4 * ping_ind] = TracksMissMat[track_id * 5 + 4 * (ping_ind - 1)];
+
+            } else {
+                double r = MergedRng[plot_id];
+                double teta = MergedTeta[plot_id] * PI / 180;
+                /*
+                double yc[MergedYc_col_size] ;
+                for (int i = 0; i < MergedYc_num_rows; i++) {
+                    yc[i] = MergedYc[i * MergedYc_num_rows + plot_id];
+                }
+                */
+                double yc[2] = {MergedYc[plot_id], MergedYc[13 + plot_id]};
+
+                double Rc[2 * 2];
+                cov_plot_calcRoee(r, teta, sigmaTeta, Rc);
+
+                // Calculate time between last update and current one
+                int last_ping_number = TracksVecMat[3 * 360 + track_id];
+                double T = (ping_ind - last_ping_number) * Tping;
+
+                // Call Kalman filter
+                double X_upd[4], P_upd[4 * 4], teta_rad;
+                double cut_TracksX[4] = {TracksX[track_id], TracksX[360 + track_id], TracksX[2 * 360 + track_id], TracksX[3 * 360 + track_id]};
+                double cut_TracksP[16];
+                
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        cut_TracksP[i*4+j] = TracksP[ track_id*16 +  i * 4 + j];
+                    }
+                }
+
+                Kalman_filterRoee(X_upd, P_upd, &teta_rad, yc, Rc, T, cut_TracksX, cut_TracksP);
+
+                for (int j = 0; j < 4; j++) {
+                    TracksX[j * 360 + track_id] = X_upd[j];
+                    for (int k = 0; k < 4; k++) {
+                        TracksP[track_id * 16 + j * 4 + k] = P_upd[j * 4 + k];
+                    }
+                }
+
+                // Update TracksVecMat
+                TracksVecMat[track_id  + 0*360] += 1;
+                TracksVecMat[track_id  + 1*360] = sqrt(X_upd[0] * X_upd[0] + X_upd[1] * X_upd[1]);
+                TracksVecMat[track_id  + 2*360] = teta_rad * 180 / PI;
+                TracksVecMat[track_id  + 3*360] = ping_ind;
+
+                TracksMissMat[0*360*15+track_id*960+ping_ind] = 0;
+                TracksMissMat[1*360*15+track_id*960+ping_ind] = X_upd[2];
+                TracksMissMat[2*360*15+track_id*960+ping_ind] = X_upd[3];
+                TracksMissMat[3*360*15+track_id*960+ping_ind] = X_upd[0];
+                TracksMissMat[4*360*15+track_id*960+ping_ind] = X_upd[1];
+            }
+        }
+        //%Handling unassigned plots
+        // uncorr_plots_list = plots_index_new(find(Assigned == 0)); %List of unassigned plots
+
+        // int* uncorr_plots_list = (int*)malloc(size * sizeof(int));
+        int uncorr_plots_list[assigned_len-ind1_count];
+        int uncorr_plots_count = 0;
+        for (int i = 0; i < NumDetect; i++) {
+            if (Assigned[i] == -1) {
+                uncorr_plots_list[uncorr_plots_count++] = plots_index_new[i];
+            }
+        }
+
+        if (uncorr_plots_count > 0) {
+            for (int MergeInd = 0; MergeInd < uncorr_plots_count; MergeInd++) {
+                int plot_id = uncorr_plots_list[MergeInd];
+
+                // Calculate Rc
+                double Rc[2 * 2];
+                cov_plot_calcRoee(MergedRng[uncorr_plots_list[MergeInd]], MergedTeta[uncorr_plots_list[MergeInd]] * PI / 180, sigmaTeta, Rc);
+
+                TracksP[(CurrentTargetInd + MergeInd) * 16] = cov_fact * Rc[0];
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 1] = cov_fact * Rc[1];
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 4] = cov_fact * Rc[5];
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 5] = cov_fact * Rc[6];
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 6] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 7] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 8] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 9] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 10] = cov_fact * pow(xmax / (Win_dlt * Tping), 2);
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 11] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 12] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 13] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 14] = 0;
+                TracksP[(CurrentTargetInd + MergeInd) * 16 + 15] = cov_fact * pow(xmax / (Win_dlt * Tping), 2);
+            }
+            // Update TracksX
+            for (int j = CurrentTargetInd; j < (CurrentTargetInd + uncorr_plots_count); j++) {
+                TracksX[0 * 360 + j] = MergedYc[0 * 13 + uncorr_plots_list[j - CurrentTargetInd]];
+                TracksX[1 * 360 + j] = MergedYc[1 * 13 + uncorr_plots_list[j - CurrentTargetInd]];
+                TracksX[2 * 360 + j] = 0;
+                TracksX[3 * 360 + j] = 0;
+
+                TracksVecMat[0 * 360 + j] = 1;
+                TracksVecMat[1 * 360 + j] = MergedRng[uncorr_plots_list[j - CurrentTargetInd]];
+                TracksVecMat[2 * 360 + j] = MergedTeta[uncorr_plots_list[j - CurrentTargetInd]];
+                TracksVecMat[3 * 360 + j] = 1;
+
+                TracksMat[0 * 360 + j] = 0;
+                TracksMat[1 * 360 + j] = 0;
+                TracksMat[2 * 360 + j] = 0;
+
+                TracksMissMat[0 * 360 * 15 + j * 15 + ping_ind] = 0;
+                TracksMissMat[1 * 360 * 15 + j * 15 + ping_ind] = 0;
+                TracksMissMat[2 * 360 * 15 + j * 15 + ping_ind] = 0;
+                TracksMissMat[0 * 360 * 15 + j * 15 + ping_ind] = MergedYc[0 * 13 + uncorr_plots_list[j - CurrentTargetInd]];
+                TracksMissMat[0 * 360 * 15 + j * 15 + ping_ind] = MergedYc[1 * 13 + uncorr_plots_list[j - CurrentTargetInd]];
+
+                for (int i = 0; i < 360; i++) {
+                    TracksDataBinMat[j + i * 360] = 0;
+                    TracksDataMat[j + i * 360] = 999;
+                }
+            }
+
+            CurrentTargetInd += uncorr_plots_count;
+        }
+    }
     // free(undeleted_tracks_indA);
     // free(Amat);
     // free(tracks_id);

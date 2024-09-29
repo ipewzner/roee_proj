@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-//#define PI 3.14159
+#define PI 3.1415926535897
 
 // Function to perform matrix multiplication using pointers
 void matrix_mult(double *A, double *B, double *result, int m, int n, int p) {

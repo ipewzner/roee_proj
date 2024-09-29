@@ -1,9 +1,11 @@
-#include "ping_to_ping_associationRoee.h"
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <math.h>
+#include <stdbool.h>
+#include "ping_to_ping_associationRoee.h"
 
 // Function to load a 2D array from a CSV file
 void load_csv_to_2d_array(const char* filename, double* data, int rows, int cols) {
@@ -67,6 +69,28 @@ void assert_arrays_equal(double* arr1, double* arr2, int size, const char* msg) 
     printf("%s: Test passed\n", msg);
 }
 
+// Function to check if two arrays are nearly equal (for float comparison)
+bool arrays_are_close(double *arr1, double *arr2, int size, double tol) {
+    for (int i = 0; i < size; i++) {
+        if (fabs(arr1[i] - arr2[i]) > tol) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Function to check if two matrices are nearly equal (for float comparison)
+bool matrices_are_close(double matrix1[4][4], double matrix2[4][4], int rows, int cols, double tol) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (fabs(matrix1[i][j] - matrix2[i][j]) > tol) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 void test_ping_to_ping_associationRoee() {
     int NumDetect = 13;
     int ping_ind = 1;
@@ -120,19 +144,22 @@ void test_ping_to_ping_associationRoee() {
     load_csv_to_2d_array("C:/Users/ipewz/Desktop/roee_proj/forTest/ping_to_ping_associationRoee_after/TracksMat.csv", TracksMat_after, 3, 360);
 
     // Call the function
-    ping_to_ping_associationRoee(TracksMat, TracksVecMat, TracksP, TracksX, TracksMissMat, TracksDataBinMat, TracksDataMat, MergedRng, MergedTeta, MergedYc, NumDetect, ping_ind, sigmaTeta, cov_fact, Win_dlt, xmax, Tping, &CurrentTargetInd);
+    ping_to_ping_associationRoee(TracksMat, TracksVecMat, TracksP, TracksX, TracksMissMat, TracksDataBinMat, TracksDataMat, MergedRng, MergedTeta, MergedYc, NumDetect, ping_ind, sigmaTeta, cov_fact, Win_dlt, xmax, Tping, CurrentTargetInd);
 
 printf("\nTracksVecMat\n");
 for (size_t i = 0; i < 360; i++)
-{
-printf("%f ",*(TracksVecMat+360+i));
+{if(*(TracksX+360+i)<100){
+printf("%f ",*(TracksX+360+i));}
 }
-printf("\nTracksVecMat_after\n");
+printf("\TracksX_after\n");
 
 for (size_t i = 0; i < 360; i++)
-{
-printf("%f ",*(TracksVecMat_after+360+i));
+{if(*(TracksX_after+360+i)<100){
+printf("%f ",*(TracksX_after+360+i));}
 }
+
+    // Tolerance for float comparison
+    double tolerance = 0.000001;
 
 
     // Compare the outputs with the expected data
@@ -140,15 +167,19 @@ printf("%f ",*(TracksVecMat_after+360+i));
     printf("tests 1 passed!\n");
     assert_arrays_equal(TracksDataBinMat, TracksDataBinMat_after, 360 * 360, "TracksDataBinMat");
     printf("tests 2 passed!\n");
-    assert_arrays_equal(TracksVecMat, TracksVecMat_after, 360 * 4, "TracksVecMat");
-    printf("tests 3 passed!\n");
-    assert_arrays_equal(TracksMat, TracksMat_after, 360 * 3, "TracksMat");
-    printf("tests 4 passed!\n");
+
+    if (!arrays_are_close(TracksVecMat, TracksVecMat_after, 360 * 4, tolerance)) {
+        printf("Test failed: X_upd does not match expected values\n");}
+
     assert_arrays_equal(TracksX, TracksX_after, 360 * 4, "TracksX");
-    printf("tests 5 passed!\n");
-    assert_arrays_equal(TracksMissMat, TracksMissMat_after, 5 * 360 * 15, "TracksMissMat");
-    printf("tests 6 passed!\n");
+    printf("tests 3 passed!\n");
     assert_arrays_equal(TracksP, TracksP_after, 360 * 4 * 4, "TracksP");
+    printf("tests 4 passed!\n");
+    assert_arrays_equal(TracksMissMat, TracksMissMat_after, 5 * 360 * 15, "TracksMissMat");
+    printf("tests 5 passed!\n");
+    assert_arrays_equal(TracksMat, TracksMat_after, 360 * 3, "TracksMat");
+    printf("tests 6 passed!\n");
+    assert_arrays_equal(TracksVecMat, TracksVecMat_after, 360 * 4, "TracksVecMat");
 
     printf("All tests passed!\n");
 }
@@ -157,3 +188,11 @@ int main() {
     test_ping_to_ping_associationRoee();
     return 0;
 }
+
+
+/*
+
+ gcc ping_to_ping_associationRoee_test.c -o ping_to_ping_associationRoee_test.exe -lm
+./ping_to_ping_associationRoee_test.exe
+
+*/
