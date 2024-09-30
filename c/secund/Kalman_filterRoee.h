@@ -56,13 +56,16 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
 
     // Process model matrices
     double G[4][2] = {{T * T / 2, 0}, {0, T * T / 2}, {T, 0}, {0, T}};
-    double Q[4][4] = {0};
+    double Q[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
     double F[4][4] = {{1, 0, T, 0}, {0, 1, 0, T}, {0, 0, 1, 0}, {0, 0, 0, 1}};
     double H[2][4] = {{1, 0, 0, 0}, {0, 1, 0, 0}};
-    double Xp[4] = {0}, Pp[4][4] = {0}, S[2][2] = {0}, K[4][2] = {0};
+    double Xp[4] = {0,0,0,0};
+    double Pp[4][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+    double S[2][2] = {{0,0},{0,0}};
+    double K[4][2] = {{0,0},{0,0},{0,0},{0,0}};
 
     // Q = sigmaV^2 * G * G'
-    double G_trans[2][4];
+    double G_trans[2][4]= {{0, 0, 0, 0}, {0,0, 0, 0}};
     transpose((double *)G, (double *)G_trans, 4, 2); // G'
     scalar_matrix_mult(sigmaV * sigmaV, (double *)G, (double *)G, 4, 2); // sigmaV^2 * G
     matrix_mult((double *)G, (double *)G_trans, (double *)Q, 4, 2, 4);  // Q = G * G'
@@ -80,8 +83,8 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
     Xp[1] -= Vy_own * T;
 
     // Covariance prediction: Pp = F * P * F' + Q
-    double F_trans[4][4];
-    double temp[4][4];
+    double F_trans[4][4]= {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};;
+    double temp[4][4]= {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};;
     transpose((double *)F, (double *)F_trans, 4, 4); // F'
     matrix_mult((double *)F, (double *)P, (double *)temp, 4, 4, 4); // F * P
     matrix_mult((double *)temp, (double *)F_trans, (double *)Pp, 4, 4, 4); // Pp = F * P * F'
@@ -92,8 +95,8 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
     }
 
     // S = H * Pp * H' + Rc
-    double H_trans[4][2];
-    double Stemp[4][2];
+    double H_trans[4][2]= {{0,0},{0,0},{0,0},{0,0}};
+    double Stemp[4][2]= {{0,0},{0,0},{0,0},{0,0}};
     transpose((double *)H, (double *)H_trans, 2, 4); // H'
     matrix_mult((double *)H, (double *)Pp, (double *)Stemp, 2, 4, 4); // H * Pp
     matrix_mult((double *)Stemp, (double *)H_trans, (double *)S, 2, 4, 2); // S = H * Pp * H'
@@ -104,14 +107,14 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
     }
 
     // K = Pp * H' * inv(S)
-    double S_inv[2][2];
-    double temp2[4][2];
+    double S_inv[2][2]= {{0,0},{0,0}};
+    double temp2[4][2]= {{0,0},{0,0},{0,0},{0,0}};
     invert_2x2((double *)S, (double *)S_inv); // inv(S)
     matrix_mult((double *)Pp, (double *)H_trans, (double *)temp2, 4, 4, 2); // Pp * H'
     matrix_mult((double *)temp2, (double *)S_inv, (double *)K, 4, 2, 2); // K = Pp * H' * inv(S)
 
     // Update state: X_upd = Xp + K * (yc - H * Xp)
-    double HXp[2] = {0}; // H * Xp
+    double HXp[2] = {0,0}; // H * Xp
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 4; j++) {
             HXp[i] += H[i][j] * Xp[j];
@@ -128,8 +131,8 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
     printf("X_upd: %f, %f, %f, %f\n", X_upd[0], X_upd[1], X_upd[2], X_upd[3]);
 
     // Update covariance: P_upd = Pp - K * S * K'
-    double KS[4][2];
-    double K_trans[4][2];
+    double KS[4][2]= {{0,0},{0,0},{0,0},{0,0}};
+    double K_trans[4][2]= {{0,0},{0,0},{0,0},{0,0}};
     transpose((double *)K, (double *)K_trans, 4, 2); // H'
 
     matrix_mult((double *)K, (double *)S, (double *)KS, 4, 2, 2); // K * S
@@ -147,25 +150,27 @@ void Kalman_filterRoee(double *X_upd, double *P_upd, double *teta_rad, double *y
         }
     }
 
-    /*
+    
     printf("P_upd: %f, %f, %f, %f\n", P_upd[0], P_upd[1], P_upd[2], P_upd[3]);
     printf("P_upd: %f, %f, %f, %f\n", P_upd[4], P_upd[5], P_upd[6], P_upd[7]);
     printf("P_upd: %f, %f, %f, %f\n", P_upd[8], P_upd[9], P_upd[10], P_upd[11]);
     printf("P_upd: %f, %f, %f, %f\n", P_upd[12], P_upd[13], P_upd[14], P_upd[15]);
-    */
+    
 
 
     // Extract smooth azimuth angle: teta_rad = atan(...)
     if (X_upd[1] >= 0 && X_upd[0] >= 0) {
-        *teta_rad = atan(fabs(X_upd[0]) / X_upd[1]);
+        *teta_rad = atan(fabs(X_upd[0] / X_upd[1]));
     } 
      if (X_upd[1] < 0 && X_upd[0] >= 0) {
-        *teta_rad = PI - atan(fabs(X_upd[0]) / X_upd[1]);
+        double rrr1=fabs(X_upd[0] / X_upd[1]);
+        double rrr=atan(fabs(X_upd[0] / X_upd[1]));
+        *teta_rad = PI - atan(fabs(X_upd[0] / X_upd[1]));
     }  
     if (X_upd[1] < 0 && X_upd[0] < 0) {
-        *teta_rad = PI + atan(fabs(X_upd[0]) / X_upd[1]);
+        *teta_rad = PI + atan(fabs(X_upd[0] / X_upd[1]));
     } 
      if (X_upd[1] >= 0 && X_upd[0] < 0) {
-        *teta_rad = 2 * PI - atan(fabs(X_upd[0]) / X_upd[1]);
+        *teta_rad = 2 * PI - atan(fabs(X_upd[0] / X_upd[1]));
     }
 }
