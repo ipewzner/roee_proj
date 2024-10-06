@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#define PI 3.14159
+#define PI 3.1415926535897
 
 void test_cov_plot_calcRoee() {
     // Load inputs from CSV files

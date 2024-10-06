@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <math.h>
+#include "matrix_mult.h"
+#include "transpose.h"
 
 #define PI 3.1415926535897
 
+/*
 // Function to perform matrix multiplication using pointers
 void matrix_mult(double *A, double *B, double *result, int m, int n, int p) {
     for (int i = 0; i < m; i++) {
@@ -14,7 +17,9 @@ void matrix_mult(double *A, double *B, double *result, int m, int n, int p) {
         }
     }
 }
+*/
 
+/*
 // Function to perform matrix transpose using pointers
 void transpose(double *A, double *result, int rows, int cols) {
     for (int i = 0; i < rows; i++) {
@@ -23,6 +28,7 @@ void transpose(double *A, double *result, int rows, int cols) {
         }
     }
 }
+*/
 
 // Function to perform matrix inversion (stub, needs real implementation for 2x2)
 void invert_2x2(double *A, double *result) {

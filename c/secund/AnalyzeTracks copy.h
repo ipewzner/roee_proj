@@ -163,6 +163,8 @@ void initialize_tracks(double* TracksMat, double* TracksX, double* TracksVecMat,
     printf("");
 }
 */
+
+
 void update_tracks2(
     double* MergedRng, double* MergedTeta, double sigmaTeta, int NumDetect, int CurrentTargetInd,
     double cov_fact, double xmax, double Win_dlt, double Tping, double* TracksP, double* TracksMissMat,
@@ -198,28 +200,20 @@ void update_tracks2(
         TracksP[idx + 15] = cov_fact * factor;  // (xmax / (Win_dlt * Tping))^2
     }
 
-    /*
-       TracksMissMat(1, CurrentTargetInd+1: CurrentTargetInd+NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat(2, 1: NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat(3, 1: NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat(4, 1: NumDetect, ping_number) = MergedYc(1, :);
-        TracksMissMat(5, 1: NumDetect, ping_number) = MergedYc(2, :);
-
-    */
     // Update TracksMissMat
     for (int i = 0; i < NumDetect; i++) {
         int target_idx = CurrentTargetInd + i;
 
         // TracksMissMat is flattened, update specific slices
-        TracksMissMat[ (CurrentTargetInd+i)*15+ ping_number] = 0;                         // TracksMissMat(1, CurrentTargetInd+1: CurrentTargetInd+NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat[1 * 360 * 15 + i * 15 + ping_number] = 0;                        // TracksMissMat(2, 1: NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat[2 * 360 * 15 + i * 15 + ping_number] = 0;                        // TracksMissMat(3, 1: NumDetect, ping_number) = zeros(1, NumDetect);
-        TracksMissMat[3 * 360 * 15 + i * 15 + ping_number] = MergedYc[i];              // TracksMissMat(4, 1: NumDetect, ping_number) = MergedYc(1, :);
-        TracksMissMat[4 * 360 * 15 + i * 15 + ping_number] = MergedYc[i + NumDetect];  // TracksMissMat(5, 1: NumDetect, ping_number) = MergedYc(2, :);
+        TracksMissMat[0 * NumDetect + target_idx] = 0;               // TracksMissMat(1, CurrentTargetInd+1: CurrentTargetInd+NumDetect, ping_number) = zeros(1, NumDetect);
+        TracksMissMat[1 * NumDetect + i] = 0;                        // TracksMissMat(2, 1: NumDetect, ping_number) = zeros(1, NumDetect);
+        TracksMissMat[2 * NumDetect + i] = 0;                        // TracksMissMat(3, 1: NumDetect, ping_number) = zeros(1, NumDetect);
+        TracksMissMat[3 * NumDetect + i] = MergedYc[i];              // TracksMissMat(4, 1: NumDetect, ping_number) = MergedYc(1, :);
+        TracksMissMat[4 * NumDetect + i] = MergedYc[i + NumDetect];  // TracksMissMat(5, 1: NumDetect, ping_number) = MergedYc(2, :);
     }
 }
 
-#define TEST1
+// #define TEST1
 #ifndef TEST1
 
 double MergedRng[10];
@@ -279,15 +273,15 @@ void AnalyzeTracks(
     memcpy(TracksDataMat, TracksDataMatT, 360 * 360 * sizeof(double));
     memcpy(TracksMissMat, TracksMissMatT, 5 * 360 * 15 * sizeof(double));
     memcpy(TracksP, TracksPT, 360 * 4 * 4 * sizeof(double));
-    // memcpy(TracksVecMat, TracksVecMatT, 4 * 360 * sizeof(double));
-    // memcpy(TracksX, TracksXT, 4 * 360 * sizeof(double));
-    // memcpy(TracksMat, TracksMatT, 3 * 360 * sizeof(double));
+    //memcpy(TracksVecMat, TracksVecMatT, 4 * 360 * sizeof(double));
+    //memcpy(TracksX, TracksXT, 4 * 360 * sizeof(double));
+    //memcpy(TracksMat, TracksMatT, 3 * 360 * sizeof(double));
 
 #endif
     const double cov_fact = 5;
     const double xmax = 10;
     int size_uncorr_plots_list = numDetect;
-    int NumDetect = numDetect;
+
     if (ping_number > 0) {
         // Call ping_to_ping_correlationRoee
 
@@ -366,29 +360,25 @@ void AnalyzeTracks(
                      3, 360, 4, 4);
 
     } else {
-        // Initialize for first ping_number
-        for (int i = 0; i < NumDetect; i++) {
-            int idx = i;
-            TracksMat[idx] = 0;
-            TracksMat[idx + 360] = 0;
-            TracksMat[idx + 2 * 360] = 0;
+        // initialize_tracks(TracksMat, TracksX, TracksVecMat, MergedYc, MergedRng, MergedTeta, numDetect, ping_number);
+        //  Initialize TracksMat (flattened)
+        for (int i = 0; i < numDetect; i++) {
+            TracksMat[i] = 0;            // TracksMat(1, 1: NumDetect) = zeros(1, NumDetect);
+            TracksMat[360 + i] = 0;      // TracksMat(2, 1: NumDetect) = zeros(1, NumDetect);
+            TracksMat[2 * 360 + i] = 0;  // TracksMat(3, 1: NumDetect) = zeros(1, NumDetect);
 
-            TracksX[idx] = MergedYc[i];
-            TracksX[idx + 360] = MergedYc[i + NumDetect];
-            TracksX[idx + 360 * 2] = 0;
-            TracksX[idx + 360 * 3] = 0;
+            TracksX[i] = MergedYc[i];                    // TracksX(1, 1: NumDetect) = MergedYc(1, :);
+            TracksX[360 + i] = MergedYc[numDetect + i];  // TracksX(2, 1: NumDetect) = MergedYc(2, :);
+            TracksX[2 * 360 + i] = 0;                    // TracksX(3, 1: NumDetect) = zeros(1, NumDetect);
+            TracksX[3 * 360 + i] = 0;                    // TracksX(4, 1: NumDetect) = zeros(1, NumDetect);
 
-            TracksVecMat[idx] = 1;
-            TracksVecMat[idx + 360] = MergedRng[i];
-            TracksVecMat[idx + 360 * 2] = MergedTeta[i];
-            TracksVecMat[idx + 360 * 3] = ping_number+1;
-
-            /*for (int j = 0; j < 5; ++j) {
-                TracksMissMat[idx * NUM_OF_PINGS * 5 + j * NUM_OF_PINGS + ping_number - 1] =
-                    (j < 3) ? 0 : MergedYc[i + j * NumDetect - 3 * NumDetect];
-            }*/
+            TracksVecMat[i] = 1;                        // TracksVecMat(1, 1: NumDetect) = ones(1, NumDetect);
+            TracksVecMat[360 + i] = MergedRng[i];       // TracksVecMat(2, 1: NumDetect) = MergedRng;
+            TracksVecMat[2 * 360 + i] = MergedTeta[i];  // TracksVecMat(3, 1: NumDetect) = MergedTeta;
+            TracksVecMat[4 * 360 + i] = ping_number;    // TracksVecMat(4, 1: NumDetect) = ping_number * ones(1, NumDetect);
         }
-        // CurrentTargetInd += NumDetect;
         update_tracks2(MergedRng, MergedTeta, sigmaTeta, numDetect, CurrentTargetInd, cov_fact, xmax, Win_dlt, Tping, TracksP, TracksMissMat, MergedYc, ping_number);
     }
+
+    // Other sections of the code (e.g., cleaning tracks) should also be converted similarly, updating each array as a flattened array.
 }

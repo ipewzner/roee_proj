@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef COV_PLOT_CALC_ROEE_H
+#define COV_PLOT_CALC_ROEE_H
 void cov_plot_calcRoee(double r, double teta, double sigmaTeta, double* rc) {
     double sigmaR = 0.3;
     double sigmaR2 = sigmaR * sigmaR;
@@ -20,3 +22,7 @@ void cov_plot_calcRoee(double r, double teta, double sigmaTeta, double* rc) {
     rc[1] = sin(teta) * cos(teta) * exp(-4 * sigmaTeta) * (sigmaR2 + (r2 + sigmaR2) * (1 - exp(sigmaTeta2)));
     rc[2] = rc[1];  // Fill in the off-diagonal element
 }
+
+
+
+#endif

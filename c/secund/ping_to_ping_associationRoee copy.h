@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -9,9 +10,9 @@
 #define MAX_PLOTS 100
 
 // Function prototypes for imported functions from MATLAB
-void AuctionRoee(float *cost_matrix, int n_tracks, int n_plots, int *assignment);
-void Kalman_filterRoee(float *x, float *P, float *z, int track_idx);
-void cov_plot_calcRoee(float *cov_matrix, float *plot);
+//void AuctionRoee(float *cost_matrix, int n_tracks, int n_plots, int *assignment);
+//void Kalman_filterRoee(float *x, float *P, float *z, int track_idx);
+//void cov_plot_calcRoee(float *cov_matrix, float *plot);
 
 void ping_to_ping_associationRoee(
     int nPlots,
@@ -82,3 +83,4 @@ void ping_to_ping_associationRoee(
     }
 }
 
+*/

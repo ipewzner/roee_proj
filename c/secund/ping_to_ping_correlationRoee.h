@@ -11,7 +11,7 @@
 #define TETA_DIST 10
 #define PENALTY 50
 #define GAMMA_CORR 0.1
-#define PI 3.14159
+//#define PI 3.14159
 #define TEST
 #ifndef TEST
 double MergedRng[13];

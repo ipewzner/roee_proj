@@ -1,5 +1,7 @@
 #include <math.h>
 #include <stdio.h>
+#include "matrix_mult.h"
+#include "transpose.h"
 
 // Function for matrix multiplication
 void mat_mult(double *a, double *b, double *result, int m, int n, int p) {
@@ -13,6 +15,7 @@ void mat_mult(double *a, double *b, double *result, int m, int n, int p) {
     }
 }
 
+/*
 void matrix_mult(double *A, double *B, double *result, int m, int n, int p) {
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < p; j++) {
@@ -23,6 +26,7 @@ void matrix_mult(double *A, double *B, double *result, int m, int n, int p) {
         }
     }
 }
+*/
 
 // Function for matrix transpose
 void mat_transpose(double *a, double *result, int rows, int cols) {
@@ -42,6 +46,7 @@ void mat_inv_2x2(double *a, double *result) {
     result[3] = a[0] / det;
 }
 
+/*
 void transpose(double *A, double *result, int rows, int cols) {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -49,6 +54,7 @@ void transpose(double *A, double *result, int rows, int cols) {
         }
     }
 }
+*/
 
 // Function to calculate the std_dis (returns double)
 double std_calcRoee(int ping_ind, double Tping, double *yc, double *Rc, int last_ping_number, double *X, double *P, int n) {
