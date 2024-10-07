@@ -80,6 +80,7 @@ int compare_arrays_from_matlab(const double* arr1, const double* arr2, int size,
     }
     return 1;  // Arrays are equal
 }
+
 void test_Shortproc_ping_dataRoee() {
     // Load data from CSV files
     int pri_samples = 3201;

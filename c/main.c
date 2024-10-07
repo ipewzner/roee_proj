@@ -12,7 +12,7 @@ double GetYawFromCompass(int PingNum);
 
 
 // Global Variables
-int no_of_pings; // Number of pings, will be set in SetParameters
+int NUM_OF_PINGS; // Number of pings, will be set in SetParameters
 int MaxTarget;   // Maximum number of targets, will be set in SetParameters
 double fs, Rmin, t_pri, sigmaTeta, Win_dlt, Dlt_th, MinTracketLen;
 int Tgaurd;
@@ -25,11 +25,11 @@ void main() {
         // Main Loop (on Pings)
 
         // Initialize matrices and vectors
-        double** IndMat = (double**)malloc(no_of_pings * sizeof(double*));
-        double** rMat = (double**)malloc(no_of_pings * sizeof(double*));
-        double* YawVec = (double*)calloc(no_of_pings, sizeof(double));
+        double** IndMat = (double**)malloc(NUM_OF_PINGS * sizeof(double*));
+        double** rMat = (double**)malloc(NUM_OF_PINGS * sizeof(double*));
+        double* YawVec = (double*)calloc(NUM_OF_PINGS, sizeof(double));
 
-        for (int i = 0; i < no_of_pings; i++) {
+        for (int i = 0; i < NUM_OF_PINGS; i++) {
             IndMat[i] = (double*)malloc(MaxTarget * sizeof(double));
             rMat[i] = (double*)malloc(MaxTarget * sizeof(double));
             for (int j = 0; j < MaxTarget; j++) {
@@ -49,9 +49,9 @@ void main() {
         double* rVec;
 
         // Loop over pings
-        for (int PingNum = 1; PingNum <= no_of_pings; PingNum++) {
+        for (int PingNum = 1; PingNum <= NUM_OF_PINGS; PingNum++) {
 
-            if (PingNum == no_of_pings && UpdateThFlag == 0) {
+            if (PingNum == NUM_OF_PINGS && UpdateThFlag == 0) {
                 FinalPingFlag = 1;
             }
 
@@ -79,7 +79,7 @@ void main() {
         double TracksX[4][MaxTarget];
         double TracksMat[3][MaxTarget];
         double TracksVecMat[4][MaxTarget];
-        double TracksMissMat[5][MaxTarget][no_of_pings];
+        double TracksMissMat[5][MaxTarget][NUM_OF_PINGS];
         int TracksDataBinMat[MaxTarget][MaxTarget];
         double TracksDataMat[MaxTarget][MaxTarget];
         int CurrentTargetInd = 0;
@@ -98,7 +98,7 @@ void main() {
         }
 
         // Process each ping
-        for (int PingNum = 1; PingNum <= no_of_pings; PingNum++) {
+        for (int PingNum = 1; PingNum <= NUM_OF_PINGS; PingNum++) {
             double CurrentYaw = YawVec[PingNum - 1];
             double* IndVec = IndMat[PingNum - 1];
             double* rVec = rMat[PingNum - 1];
@@ -144,7 +144,7 @@ void main() {
         }
 
         // Free memory for IndMat and rMat
-        for (int i = 0; i < no_of_pings; i++) {
+        for (int i = 0; i < NUM_OF_PINGS; i++) {
             free(IndMat[i]);
             free(rMat[i]);
         }

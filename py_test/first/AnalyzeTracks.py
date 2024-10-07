@@ -5,7 +5,7 @@ def AnalyzeTracks(TracksMat, TracksVecMat, TracksP, TracksX, TracksMissMat, Trac
     
     cov_fact = 5
     xmax = 10
-    no_of_pings = TracksMissMat.shape[2]
+    NUM_OF_PINGS = TracksMissMat.shape[2]
 
     NumDetect = len(MergedRng)
     MaxTarget = TracksVecMat.shape[1]
@@ -78,7 +78,7 @@ def AnalyzeTracks(TracksMat, TracksVecMat, TracksP, TracksX, TracksMissMat, Trac
         TracksNewX = 999 * np.ones((4, MaxTracks))
         TracksNewMat = 999 * np.ones((3, MaxTracks))
         TracksVecNewMat = 999 * np.ones((4, MaxTracks))
-        TracksNewMissMat = 999 * np.ones((5, MaxTarget, no_of_pings))
+        TracksNewMissMat = 999 * np.ones((5, MaxTarget, NUM_OF_PINGS))
         TracksNewDataBinMat = np.zeros((MaxTarget, MaxTarget))
         TracksNewDataMat = 999 * np.ones((MaxTarget, MaxTarget))
 

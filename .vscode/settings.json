@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "cmath": "cpp",
-        "cov_plot_calcroee.h": "c"
+        "cov_plot_calcroee.h": "c",
+        "shortproc_ping_dataroee.h": "c"
     }
 }

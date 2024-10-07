@@ -4,7 +4,7 @@ def get_parameters():
     params = {}
 
     # General parameters
-    params['no_of_pings'] = 15  # Number of pings
+    params['NUM_OF_PINGS'] = 15  # Number of pings
     params['Rmin'] = 15  # [m]
     params['Dlt_th'] = 7
     params['median_filter_size'] = 101

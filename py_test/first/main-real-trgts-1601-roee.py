@@ -19,13 +19,13 @@ def main():
 
     while True:
         # Main Loop (on Pings)
-        IndMat = 999 * np.ones((params['no_of_pings'], params['MaxTarget']), dtype=int)
-        rMat = 999 * np.ones((params['no_of_pings'], params['MaxTarget']))
-        YawVec = np.zeros(params['no_of_pings'])
+        IndMat = 999 * np.ones((params['NUM_OF_PINGS'], params['MaxTarget']), dtype=int)
+        rMat = 999 * np.ones((params['NUM_OF_PINGS'], params['MaxTarget']))
+        YawVec = np.zeros(params['NUM_OF_PINGS'])
         FinalPingFlag = 0
         
-        for PingNum in range(params['no_of_pings']):
-            if (PingNum == params['no_of_pings'] - 1) and (UpdateThFlag == 0):
+        for PingNum in range(params['NUM_OF_PINGS']):
+            if (PingNum == params['NUM_OF_PINGS'] - 1) and (UpdateThFlag == 0):
                 FinalPingFlag = 1
             
             try:
@@ -66,12 +66,12 @@ def main():
         TracksX = 999 * np.ones((4, params['MaxTarget']))
         TracksMat = 999 * np.ones((3, params['MaxTarget']))
         TracksVecMat = 999 * np.ones((4, params['MaxTarget']))
-        TracksMissMat = 999 * np.ones((5, params['MaxTarget'], params['no_of_pings']))
+        TracksMissMat = 999 * np.ones((5, params['MaxTarget'], params['NUM_OF_PINGS']))
         TracksDataBinMat = np.zeros((params['MaxTarget'], params['MaxTarget']))
         TracksDataMat = 999 * np.ones((params['MaxTarget'], params['MaxTarget']))
 
         CurrentTargetInd = 0
-        for PingNum in range(params['no_of_pings']):
+        for PingNum in range(params['NUM_OF_PINGS']):
             print(f"Processing Ping {PingNum + 1}")
             CurrentYaw = YawVec[PingNum]
             IndVec = IndMat[PingNum, :]
